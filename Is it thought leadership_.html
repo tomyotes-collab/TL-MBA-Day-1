@@ -1,0 +1,927 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Is it thought leadership?</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#E9EEEC; --surface:#FFFFFF; --surface-2:#F4F7F6; --ink:#1B2529; --muted:#56656B; --line:#C9D3D0;
+  --primary:#0E5C58; --primary-ink:#FFFFFF; --focus:#E0A526;
+  --v-tl:#0E6B63; --v-cm:#2F64AD; --v-pr:#6F4FA0; --v-adv:#A8416F; --v-inf:#B07A10; --v-promo:#5E676B;
+  --yes:#0E6B63; --partly:#B07A10; --no:#9A3B3B;
+  color-scheme: light;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#121A1C; --surface:#1A2427; --surface-2:#202D31; --ink:#E6EEEC; --muted:#9AABAF; --line:#2F3E42;
+    --primary:#5FC2B7; --primary-ink:#0B1F1D; --focus:#F0C25A;
+    --v-tl:#5FC2B7; --v-cm:#7FA8E8; --v-pr:#B49BE0; --v-adv:#E58AB4; --v-inf:#E7B54E; --v-promo:#A6B0B4;
+    --yes:#5FC2B7; --partly:#E7B54E; --no:#E58A8A;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#121A1C; --surface:#1A2427; --surface-2:#202D31; --ink:#E6EEEC; --muted:#9AABAF; --line:#2F3E42;
+  --primary:#5FC2B7; --primary-ink:#0B1F1D; --focus:#F0C25A;
+  --v-tl:#5FC2B7; --v-cm:#7FA8E8; --v-pr:#B49BE0; --v-adv:#E58AB4; --v-inf:#E7B54E; --v-promo:#A6B0B4;
+  --yes:#5FC2B7; --partly:#E7B54E; --no:#E58A8A;
+  color-scheme: dark;
+}
+*,*::before,*::after{box-sizing:inherit}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:"Atkinson Hyperlegible",system-ui,-apple-system,"Segoe UI",sans-serif;font-size:17px;line-height:1.55}
+h1,h2,h3{font-family:"Bricolage Grotesque","Atkinson Hyperlegible",system-ui,sans-serif;line-height:1.1;margin:0}
+button,input,select,textarea{font:inherit;color:inherit}
+:focus-visible{outline:3px solid var(--focus);outline-offset:2px}
+.wrap{max-width:1180px;margin:0 auto;padding:20px 20px 48px}
+
+/* header */
+.top{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:16px;padding:8px 0 18px;border-bottom:2px solid var(--ink)}
+.top h1{font-size:clamp(2rem,5vw,3.4rem);font-weight:800;letter-spacing:-.02em}
+.top p{margin:6px 0 0;color:var(--muted)}
+.tools{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.timer{display:flex;align-items:center;gap:6px;background:var(--surface);border:1px solid var(--line);border-radius:999px;padding:4px 6px 4px 14px}
+.timer output{font-family:"Bricolage Grotesque",sans-serif;font-weight:700;font-size:1.25rem;min-width:4ch;font-variant-numeric:tabular-nums}
+.timer.low output{color:var(--no)}
+.btn{border:1px solid var(--line);background:var(--surface);border-radius:10px;padding:8px 14px;cursor:pointer}
+.btn:hover{border-color:var(--ink)}
+.btn.primary{background:var(--primary);color:var(--primary-ink);border-color:var(--primary);font-weight:700}
+.btn.small{padding:4px 10px;font-size:.9rem;border-radius:999px}
+.btn[disabled]{opacity:.45;cursor:not-allowed}
+.tabs{display:flex;gap:4px;margin:18px 0 22px}
+.tab{border:0;background:transparent;padding:8px 14px;border-radius:8px;cursor:pointer;color:var(--muted);font-weight:700}
+.tab[aria-selected="true"]{background:var(--ink);color:var(--bg)}
+
+/* setup */
+.setup{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);gap:28px;background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:28px}
+.setup h2{font-size:1.9rem;font-weight:700;margin-bottom:10px}
+.setup ol{margin:0;padding-left:1.3em}
+.setup ol li{margin-bottom:10px}
+.field{display:flex;flex-direction:column;gap:6px;margin:16px 0}
+.field input,.field textarea,.cell select{border:1px solid var(--line);background:var(--surface-2);border-radius:10px;padding:10px 12px}
+.hint{color:var(--muted);font-size:.92rem}
+
+/* case nav */
+.casenav{display:flex;gap:8px;overflow-x:auto;padding-bottom:6px;margin-bottom:18px}
+.casebtn{flex:0 0 auto;display:flex;align-items:center;gap:8px;border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:6px 14px 6px 6px;cursor:pointer;white-space:nowrap}
+.casebtn .tag{display:inline-grid;place-items:center;width:28px;height:28px;border-radius:50%;background:var(--surface-2);font-weight:700;font-family:"Bricolage Grotesque",sans-serif}
+.casebtn[aria-current="true"]{border-color:var(--ink);box-shadow:inset 0 0 0 1px var(--ink)}
+.casebtn.done .tag{background:var(--primary);color:var(--primary-ink)}
+
+/* case layout */
+.grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.05fr);gap:22px;align-items:start}
+.exhibit{position:relative;background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:26px 26px 22px;overflow:hidden}
+.exhibit .letter{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:5.5rem;line-height:.8;color:var(--line);position:absolute;right:18px;top:14px}
+.exhibit .org{color:var(--muted);font-weight:700;margin-bottom:4px}
+.exhibit h2{font-size:clamp(1.6rem,3vw,2.2rem);font-weight:700;max-width:16ch;margin-bottom:12px}
+.exhibit .what{font-size:1.08rem;margin:0 0 14px;max-width:60ch}
+.exhibit ul{margin:0 0 14px;padding-left:1.1em;max-width:60ch}
+.exhibit li{margin-bottom:6px}
+.exhibit a{color:var(--primary)}
+.stamp{position:absolute;right:22px;bottom:22px;transform:rotate(-8deg) scale(.6);opacity:0;border:3px solid currentColor;border-radius:10px;padding:6px 12px;font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:1.05rem;letter-spacing:.01em;background:var(--surface);transition:transform .35s cubic-bezier(.2,1.4,.4,1),opacity .2s}
+.stamp.on{opacity:1;transform:rotate(-8deg) scale(1)}
+@media (prefers-reduced-motion: reduce){.stamp{transition:none}}
+
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:22px}
+.panel h3{font-size:1.25rem;font-weight:700;margin-bottom:4px}
+.panel .sub{color:var(--muted);margin:0 0 14px;font-size:.95rem}
+.test{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px;align-items:center;padding:10px 0;border-top:1px solid var(--line)}
+.test:first-of-type{border-top:0}
+.test b{display:block}
+.test span{color:var(--muted);font-size:.92rem}
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:999px;overflow:hidden}
+.seg button{border:0;background:transparent;padding:6px 12px;cursor:pointer;font-size:.92rem}
+.seg button+button{border-left:1px solid var(--line)}
+.seg button[aria-pressed="true"][data-v="yes"]{background:var(--yes);color:var(--surface)}
+.seg button[aria-pressed="true"][data-v="partly"]{background:var(--partly);color:var(--surface)}
+.seg button[aria-pressed="true"][data-v="no"]{background:var(--no);color:var(--surface)}
+.scoreline{display:flex;align-items:center;gap:10px;margin:12px 0 4px;color:var(--muted);font-size:.95rem}
+.pips{display:inline-flex;gap:4px}
+.pip{width:16px;height:16px;border-radius:4px;border:1.5px solid var(--line);background:transparent}
+.pip.full{background:var(--yes);border-color:var(--yes)}
+.pip.half{background:linear-gradient(90deg,var(--partly) 50%,transparent 50%);border-color:var(--partly)}
+.verdicts{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px;margin:12px 0}
+.vbtn{text-align:left;border:1.5px solid var(--line);background:var(--surface-2);border-radius:12px;padding:10px 12px;cursor:pointer;font-weight:700}
+.vbtn small{display:block;font-weight:400;color:var(--muted);font-size:.82rem;margin-top:2px}
+.vbtn[aria-pressed="true"]{border-color:var(--vc);box-shadow:inset 0 0 0 1.5px var(--vc);color:var(--vc)}
+.field textarea{min-height:88px;resize:vertical}
+.navrow{display:flex;justify-content:space-between;gap:10px;margin-top:14px;flex-wrap:wrap}
+.gov{margin-top:16px;padding:12px 14px;border-radius:12px;background:var(--surface-2);font-size:.95rem}
+
+/* summary */
+.sumhead{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:flex-end;gap:12px;margin-bottom:16px}
+.sumhead h2{font-size:2rem;font-weight:700}
+.rows{display:flex;flex-direction:column;gap:10px}
+.row{display:grid;grid-template-columns:44px minmax(0,1.2fr) auto minmax(0,1fr);gap:16px;align-items:center;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:14px 16px}
+.row .tag{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:1.6rem;color:var(--muted)}
+.row h3{font-size:1.05rem;font-weight:700}
+.row .reason{color:var(--muted);font-size:.92rem;margin:2px 0 0}
+.chip{display:inline-block;border-radius:999px;padding:3px 10px;font-weight:700;font-size:.85rem;border:1.5px solid var(--vc);color:var(--vc);white-space:nowrap}
+.chip.none{--vc:var(--muted);border-style:dashed}
+.suggest{grid-column:2 / -1;border-top:1px dashed var(--line);padding-top:10px;font-size:.95rem}
+.suggest b{font-weight:700}
+
+/* board */
+.boardtools{display:flex;gap:10px;flex-wrap:wrap;align-items:flex-end;margin-bottom:16px}
+.boardtools .field{margin:0}
+.tablewrap{overflow-x:auto;background:var(--surface);border:1px solid var(--line);border-radius:16px}
+table{border-collapse:collapse;width:100%;min-width:720px}
+th,td{padding:10px 12px;border-bottom:1px solid var(--line);text-align:left;vertical-align:middle}
+th{font-family:"Bricolage Grotesque",sans-serif;font-weight:700}
+thead th{background:var(--surface-2)}
+td.casecell b{display:block}
+td.casecell span{color:var(--muted);font-size:.85rem}
+.cell select{padding:6px 8px;width:100%;min-width:140px}
+.spread{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.split{font-weight:700;color:var(--no);font-size:.85rem}
+.teamhead{display:flex;align-items:center;gap:6px;white-space:nowrap}
+.icon{border:0;background:transparent;cursor:pointer;color:var(--muted);padding:2px 4px;border-radius:6px}
+.callout{margin:16px 0 0;padding:14px 16px;border-left:4px solid var(--focus);background:var(--surface);border-radius:0 12px 12px 0}
+.empty{padding:28px;text-align:center;color:var(--muted)}
+
+@media (max-width: 860px){
+  .grid,.setup{grid-template-columns:1fr}
+  .row{grid-template-columns:36px minmax(0,1fr)}
+  .row .chipcol,.row .pipcol{grid-column:2}
+  .suggest{grid-column:1 / -1}
+  .exhibit .letter{font-size:4rem}
+}
+.testinfo{margin-top:4px;font-size:.9rem}
+.testinfo summary{cursor:pointer;color:var(--primary);font-weight:700;width:max-content}
+.testinfo p{margin:6px 0 0;color:var(--ink)}
+.guide-intro{max-width:70ch;margin:0 0 18px}
+.guide{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:14px}
+.gcard{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:18px 20px}
+.gcard h3{font-size:1.2rem;font-weight:700;margin-bottom:4px}
+.gcard .ask{color:var(--muted);margin:0 0 10px}
+.gcard p{margin:6px 0 0}
+.gcard.wide{grid-column:1 / -1}
+.gcard ul{margin:6px 0 0;padding-left:1.1em}
+.gcard li{margin-bottom:4px}
+.lockbox{max-width:460px;background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:24px}
+.lockbox h2{font-size:1.6rem;font-weight:700;margin-bottom:6px}
+.lockrow{display:flex;gap:8px;flex-wrap:wrap}
+.lockrow input{flex:1 1 180px;border:1px solid var(--line);background:var(--surface-2);border-radius:10px;padding:10px 12px}
+.err{color:var(--no);font-weight:700;margin:8px 0 0}
+.anshead{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:flex-end;gap:12px;margin-bottom:16px}
+.anshead h2{font-size:2rem;font-weight:700}
+.acard{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:18px 20px;margin-bottom:14px}
+.acard header{display:flex;flex-wrap:wrap;align-items:center;gap:12px;justify-content:space-between;margin-bottom:10px}
+.acard h3{font-size:1.25rem;font-weight:700}
+.acard table{min-width:0}
+.acard td,.acard th{padding:8px 10px;font-size:.95rem}
+.pill{display:inline-block;min-width:4.5em;text-align:center;border-radius:999px;padding:2px 10px;font-weight:700;font-size:.85rem;color:var(--surface)}
+.pill.yes{background:var(--yes)}.pill.partly{background:var(--partly)}.pill.no{background:var(--no)}
+.prompt{margin:10px 0 0;padding:10px 12px;border-radius:10px;background:var(--surface-2)}
+.steps{margin:8px 0 0;padding-left:1.4em}
+.steps li{margin-bottom:10px}
+.steps li div{color:var(--ink);margin-top:2px}
+.steps .time{color:var(--muted);font-weight:400}
+.roles{margin:0;padding-left:1.1em}
+.roles li{margin-bottom:4px}
+.stepsbox{margin:0 0 14px;padding:10px 12px;border-radius:12px;background:var(--surface-2)}
+.stepsbox summary{cursor:pointer;font-weight:700;color:var(--primary)}
+.stepsbox .steps li{margin-bottom:4px}
+:root{--v-bl:#4F6B86;--v-edu:#2B7A8B}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--v-bl:#9DB6CF;--v-edu:#7CC6D6}}
+:root[data-theme="dark"]{--v-bl:#9DB6CF;--v-edu:#7CC6D6}
+[hidden]{display:none !important}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <div>
+      <h1>Is it thought leadership?</h1>
+      <p>Six real examples from six industries. Six tests. One verdict for each.</p>
+    </div>
+    <div class="tools">
+      <div class="timer" id="timer" aria-label="Activity timer">
+        <output id="clock" aria-live="off">25:00</output>
+        <button class="btn small" id="timerToggle">Start</button>
+        <button class="btn small" id="timerReset" aria-label="Reset timer">Reset</button>
+      </div>
+    </div>
+  </header>
+
+  <div class="tabs" role="tablist" aria-label="Views">
+    <button class="tab" role="tab" id="tab-team" aria-selected="true" aria-controls="view-team">Team activity</button>
+    <button class="tab" role="tab" id="tab-guide" aria-selected="false" aria-controls="view-guide">The six tests</button>
+    <button class="tab" role="tab" id="tab-board" aria-selected="false" aria-controls="view-board">Class board</button>
+    <button class="tab" role="tab" id="tab-answers" aria-selected="false" aria-controls="view-answers">Answers</button>
+  </div>
+
+  <main id="view-team" role="tabpanel" aria-labelledby="tab-team"></main>
+  <section id="view-guide" role="tabpanel" aria-labelledby="tab-guide" hidden></section>
+  <section id="view-board" role="tabpanel" aria-labelledby="tab-board" hidden></section>
+  <section id="view-answers" role="tabpanel" aria-labelledby="tab-answers" hidden></section>
+</div>
+
+<script>
+(function(){
+"use strict";
+
+var VERDICTS = [
+  {id:"tl", label:"Thought leadership", note:"Credible, useful knowledge"},
+  {id:"bl", label:"Borderline", note:"Part thought leadership, part another activity"},
+  {id:"edu", label:"Expert education", note:"Explains established knowledge"},
+  {id:"cm", label:"Content marketing", note:"Attracts an audience"},
+  {id:"pr", label:"PR", note:"Manages reputation"},
+  {id:"adv", label:"Advocacy", note:"Wins support for a cause"},
+  {id:"inf", label:"Influencer activity", note:"Borrows creators’ reach"},
+  {id:"promo", label:"Promotion", note:"Asks people to buy"}
+];
+var VMAP = {}; VERDICTS.forEach(function(v){ VMAP[v.id] = v; });
+
+var ROLES = [
+  ["Reader", "reads each example and its facts aloud"],
+  ["Recorder", "controls the device and enters the six test answers"],
+  ["Scribe", "writes the team’s one-sentence reason"],
+  ["Timekeeper", "keeps each example to about 3 minutes"],
+  ["Spokesperson", "reports back to the class at the end"]
+];
+var STEPS = [
+  ["Get set up", "2 minutes", "Gather around one device. Agree a team name and give everyone a role (see below). In a team of six, two people can share the Reader role."],
+  ["Read the example", "30 seconds", "The Reader reads the example and its three facts aloud. Open the source link only if the team needs more detail."],
+  ["Test it", "1½ minutes", "Go through the six tests one by one. For each, agree on yes, partly or no. If you are unsure, open “Examples and how to score”. If the team disagrees, take a quick vote and move on."],
+  ["Choose a verdict", "30 seconds", "Pick the label that fits best. The score is a guide, not a rule: several No answers usually point away from thought leadership."],
+  ["Write your reason", "30 seconds", "The Scribe finishes the sentence “This is, or is not, thought leadership because…”. Name the test that decided it. If the team was split, mention the other view."],
+  ["Check who benefits", "15 seconds", "Briefly answer the governance question at the bottom: who gains from this, and are they open about it?"],
+  ["Repeat for all six examples", "about 18 minutes in total", "Move to the next example. Keep to about 3 minutes each so you finish all six."],
+  ["Review your results", "2 minutes", "Open “Our results”. Choose one verdict you are confident about and one where your team disagreed."],
+  ["Report back", "1 minute per team", "The Spokesperson shares those two verdicts and the reasons. Your lecturer records every team’s verdicts on the class board."]
+];
+function stepsList(compact){
+  return el("ol", {class:"steps"}, STEPS.map(function(s){
+    return el("li", null, [ el("strong", {text:s[0]}), el("span", {class:"time", text:" (" + s[1] + ")"}), compact ? null : el("div", {text:s[2]}) ]);
+  }));
+}
+function rolesList(){
+  return el("ul", {class:"roles"}, ROLES.map(function(r){ return el("li", null, [ el("strong", {text:r[0] + ": "}), r[1] ]); }));
+}
+
+var TESTS = [
+  {id:"issue", label:"Issue significance", q:"Does it deal with a problem that really matters to people?",
+   full:"Is there a real problem with consequences for customers, an industry or society?",
+   strong:"A health charity campaign explaining why early cancer screening saves lives.",
+   weak:"A post about this season’s most popular phone-case colours.",
+   tip:"Yes if people’s money, health or important decisions depend on it. No if it is a passing trend or a deal."},
+  {id:"view", label:"Distinctive perspective", q:"Does it say something beyond common advice?",
+   full:"Is there a meaningful claim beyond advice everyone already knows?",
+   strong:"A car insurer showing, with its claims data, that most accidents happen close to home rather than on highways.",
+   weak:"Generic tips that any company could post.",
+   tip:"If a competitor could publish it unchanged, the answer is No."},
+  {id:"right", label:"Right to speak", q:"Does the organisation have real expertise or partners on this?",
+   full:"Does the organisation have relevant expertise, data, experience or partners on this topic?",
+   strong:"A hospital publishing heart-health guidance written by its own cardiologists.",
+   weak:"A soft-drink company giving diet advice.",
+   tip:"Partly if the expertise is real but limited, or mainly borrowed from others. Judge commercial interests separately, under the governance question."},
+  {id:"contrib", label:"Substantive contribution", q:"Does it offer evidence, a method or a tool, not just opinion?",
+   full:"Does it provide evidence, interpretation, a framework, a forecast or a solution?",
+   strong:"A yearly survey of small-business finances that publishes its data and method.",
+   weak:"A post with no sources or evidence.",
+   tip:"Look for something concrete: data, a method or a tool."},
+  {id:"useful", label:"Audience and usefulness", q:"Can you say who it helps, and how?",
+   full:"Whose understanding matters, and how does the contribution help them?",
+   strong:"A cybersecurity firm’s checklist that helps small businesses spot phishing emails.",
+   weak:"Content aimed at “everyone”, with nothing the reader can act on.",
+   tip:"If you cannot finish the sentence “This helps [audience] to [do something]”, the answer is No."},
+  {id:"change", label:"Influence intention", q:"Is it clear what people should think or do differently?",
+   full:"What belief, way of choosing, or action is it meant to change?",
+   strong:"A road-safety campaign asking drivers to put their phones out of reach while driving.",
+   weak:"Content whose only aim is to be seen, or to sell something this week.",
+   tip:"Yes if there is a clear change in thinking or behaviour. No if the only goal is attention or a sale."}
+];
+
+var CASES = [
+  {id:"A", short:"BRICs", org:"Goldman Sachs (investment banking)", title:"“Building Better Global Economic BRICs”",
+   what:"A 2001 research paper by Goldman Sachs economist Jim O’Neill that grouped Brazil, Russia, India and China as the “BRICs”.",
+   facts:["Published on 30 November 2001 as Global Economics Paper No. 66.",
+          "Argued these four economies would grow in weight, so they should have a bigger role in global economic decisions.",
+          "The idea took off after a 2003 follow-up paper, and the term was widely adopted by investors and governments."],
+   link:"https://www.goldmansachs.com/our-firm/history/moments/2001-brics", linkText:"Goldman Sachs history page",
+   suggest:"tl", suggestLabel:"Thought leadership",
+   why:"Classic thought leadership from finance: an important question, a genuinely new idea, a credible economist with data, and a framework investors and governments used for years. It only took off after the 2003 follow-up, which shows authority is built over time. Discuss the interest: a bank benefits when clients invest in the markets it covers."},
+  {id:"B", short:"Inbound marketing", org:"HubSpot (business software)", title:"Inbound marketing and HubSpot Academy",
+   what:"HubSpot’s founders named and promoted “inbound marketing”: attracting customers with useful content instead of interrupting them with ads.",
+   facts:["HubSpot was founded in 2006 by Brian Halligan and Dharmesh Shah, who coined the term.",
+          "They published the book Inbound Marketing in 2009, and offer free courses and certifications through HubSpot Academy.",
+          "HubSpot sells marketing software that helps companies put the method into practice."],
+   link:"https://en.wikipedia.org/wiki/Brian_Halligan", linkText:"Brian Halligan, Wikipedia",
+   suggest:"tl", suggestLabel:"Thought leadership",
+   why:"Thought leadership that created a whole category: a new idea, a free book and free training, and software to put the idea into practice. Discuss the tension: the education leads straight to HubSpot’s products, so some would call it content marketing at scale. Either verdict is defensible with a clear reason."},
+  {id:"C", short:"“Don’t Buy This Jacket”", org:"Patagonia (outdoor clothing)", title:"“Don’t Buy This Jacket” advertisement",
+   what:"A full-page advert in The New York Times on Black Friday, 25 November 2011, showing a Patagonia fleece with the headline “Don’t Buy This Jacket”.",
+   facts:["Explained the jacket’s environmental cost, including the water used to make it, and asked people to buy only what they need.",
+          "Invited readers to take the Common Threads pledge to reduce, repair, reuse and recycle.",
+          "The pledge gained about 13,000 sign-ups in the following week, after 8,000 in the previous two months."],
+   link:"https://www.patagonia.ca/story-18615.html", linkText:"Patagonia’s explanation of the ad",
+   suggest:"adv", suggestLabel:"Advocacy (borderline thought leadership)",
+   why:"A strong point of view on overconsumption, with some real information about environmental cost, but its main purpose was to win support for a cause and a pledge. Closest to advocacy. Teams may argue thought leadership because it challenged how people think about buying; ask whether it offered a method or mainly a message. It also generated huge publicity, so PR is a fair second label."},
+  {id:"D", short:"Red Bull Stratos", org:"Red Bull (energy drinks)", title:"Red Bull Stratos space jump",
+   what:"On 14 October 2012, skydiver Felix Baumgartner jumped from a balloon capsule about 39 kilometres above New Mexico, sponsored and filmed by Red Bull.",
+   facts:["More than 8 million people watched live on YouTube at the same time, a record.",
+          "It was the end of a five-year project costing about 20 million US dollars.",
+          "Red Bull has long built its brand around extreme sports content."],
+   link:"https://www.guinnessworldrecords.com/world-records/105276-most-concurrent-views-for-a-live-event-on-youtube", linkText:"Guinness World Records",
+   suggest:"cm", suggestLabel:"Content marketing",
+   why:"Spectacular brand content that attracted a huge audience, but its aim was attention and brand image, not helping people understand an issue. Content marketing, or brand entertainment. Some teams may mention the scientific interest of the jump; ask whether that was the point for Red Bull."},
+  {id:"E", short:"Daniel Wellington", org:"Daniel Wellington (fashion watches)", title:"Instagram creator strategy",
+   what:"A Swedish watch brand, founded in 2011, that grew mainly through Instagram rather than traditional advertising.",
+   facts:["Gave free watches to thousands of Instagram creators, including many with small followings.",
+          "Each creator shared a personal discount code, so the brand could track the sales each one produced.",
+          "Customers were encouraged to post photos with the brand’s hashtag."],
+   link:"https://www.investmentnews.com/practice-management/how-to-build-a-200m-business-selling-cheap-watches/63378", linkText:"Profile, InvestmentNews",
+   suggest:"inf", suggestLabel:"Influencer activity",
+   why:"Growth built on creators’ reach, with discount codes driving sales. There is no new knowledge or perspective. Influencer activity, with a strong promotional element."},
+  {id:"F", short:"Shopee 11.11", org:"Shopee (e-commerce)", title:"11.11 Big Sale",
+   what:"Shopee’s annual sale around 11 November, run across Southeast Asia, including Vietnam.",
+   facts:["Offers discount and cashback vouchers, and free shipping.",
+          "Flash deals drop at set times with very low, limited-time prices.",
+          "Promoted with livestreams and brand ambassadors."],
+   link:"https://bizhub.vn/shopee-to-kickoff-single-day-sale-november-11-post339132.html", linkText:"Vietnam coverage, Bizhub",
+   suggest:"promo", suggestLabel:"Promotion",
+   why:"Pure promotion: discounts, vouchers and pressure to buy now. A useful baseline, because it fails almost every test, which helps students see the contrast with thought leadership."}
+];
+
+/* ---------- answer key (shown only after the passcode) ---------- */
+var PASS_HASH = "cb8fd8237ab15c8e1dd7d8760a5f5faee3b928ed724651522f19c05159d1ec18";
+var unlocked = false;
+try{ unlocked = sessionStorage.getItem("tl-unlocked") === "1"; }catch(e){}
+var KEYTESTS = {
+  A:{score:12, prompt:"What does Goldman Sachs gain when clients start thinking in terms of BRICs?", tests:{
+    issue:["yes","Where global growth would come from, which shapes huge investment decisions."],
+    view:["yes","A new way of grouping emerging economies."],
+    right:["yes","The bank’s chief economist, with research data behind him."],
+    contrib:["yes","Economic data, forecasts and a simple framework."],
+    useful:["yes","Investors and governments could use it to decide where to focus."],
+    change:["yes","Give these economies more weight in investment and policy decisions."]}},
+  B:{score:12, prompt:"Is free training that leads to your own software thought leadership or content marketing?", tests:{
+    issue:["yes","How businesses attract customers as buying moves online."],
+    view:["yes","Attract customers instead of interrupting them, and gave it a name."],
+    right:["yes","Practitioners who grew their own company using the method they teach."],
+    contrib:["yes","A book, free courses and certifications."],
+    useful:["yes","Marketers can apply the method directly."],
+    change:["yes","Marketers move from interrupting to attracting customers."]}},
+  C:{score:10, prompt:"Did the ad help people buy less, or help Patagonia sell more?", tests:{
+    issue:["yes","Overconsumption and its environmental cost."],
+    view:["yes","A retailer asking people to buy less on Black Friday."],
+    right:["yes","A long environmental record, and first-hand knowledge of its own products’ impact."],
+    contrib:["partly","Some data on the jacket’s impact; mainly a message."],
+    useful:["partly","A pledge and repair options, but little practical method."],
+    change:["yes","Buy less, repair and reuse."]}},
+  D:{score:2, prompt:"Can a brand earn authority through spectacle alone?", tests:{
+    issue:["no","Entertainment, not a problem viewers face."],
+    view:["no","No argument or new idea for the audience."],
+    right:["partly","Red Bull’s brand is built on extreme sports."],
+    contrib:["partly","A record-breaking event, but no knowledge aimed at viewers."],
+    useful:["no","Exciting to watch, but nothing to act on."],
+    change:["no","The aim was attention and brand image."]}},
+  E:{score:1, prompt:"Why do creator posts with discount codes feel trustworthy, and should they?", tests:{
+    issue:["no","Choosing a fashion watch is not a significant issue."],
+    view:["no","No new idea, just attractive photos."],
+    right:["no","The trust came from creators, not watch expertise."],
+    contrib:["no","No evidence, method or tool."],
+    useful:["partly","Discount codes save buyers money."],
+    change:["no","The aim was a sale."]}},
+  F:{score:2, prompt:"What would Shopee need to publish to count as thought leadership?", tests:{
+    issue:["no","Everyday shopping deals."],
+    view:["no","Discounts, like every other sale."],
+    right:["partly","A major marketplace, but no expertise is offered."],
+    contrib:["no","No evidence or method."],
+    useful:["partly","Buyers save money."],
+    change:["no","The aim is to buy now."]}}
+};
+
+var PROCESS = {
+  A:"Yes. It was followed by further papers, notably in 2003, and years of BRICs research.",
+  B:"Yes. A book, blog, free courses and an annual conference, built up over many years.",
+  C:"Yes. Part of the Common Threads Initiative and Patagonia’s long-running environmental work.",
+  D:"Partly. Red Bull produces extreme-sports content continuously, but this was a one-off event aimed at attention.",
+  E:"Partly. An ongoing creator programme, but built to drive sales, not to share knowledge.",
+  F:"Only as a yearly sales calendar, not as a knowledge strategy."
+};
+
+/* ---------- storage (per-viewer convenience) ---------- */
+var KEY = "tl-activity-v2", BKEY = "tl-board-v2";
+function load(k, fallback){ try{ var s = localStorage.getItem(k); return s ? JSON.parse(s) : fallback; }catch(e){ return fallback; } }
+function save(k, v){ try{ localStorage.setItem(k, JSON.stringify(v)); }catch(e){} }
+
+var state = load(KEY, null) || {team:"", started:false, current:0, view:"case", revealed:false, answers:{}};
+var board = load(BKEY, null) || {teams:[], picks:{}};
+function persist(){ save(KEY, state); }
+function persistBoard(){ save(BKEY, board); }
+function ans(id){ if(!state.answers[id]) state.answers[id] = {tests:{}, verdict:"", reason:""}; return state.answers[id]; }
+
+/* ---------- helpers ---------- */
+function el(tag, attrs, kids){
+  var n = document.createElement(tag);
+  if(attrs) Object.keys(attrs).forEach(function(k){
+    var v = attrs[k];
+    if(k === "text") n.textContent = v;
+    else if(k === "class") n.className = v;
+    else if(k.slice(0,2) === "on") n.addEventListener(k.slice(2), v);
+    else if(v !== null && v !== undefined && v !== false) n.setAttribute(k, v === true ? "" : v);
+  });
+  (kids || []).forEach(function(c){ if(c) n.appendChild(typeof c === "string" ? document.createTextNode(c) : c); });
+  return n;
+}
+function score(id){
+  var a = ans(id), s = 0;
+  TESTS.forEach(function(t){ var v = a.tests[t.id]; if(v === "yes") s += 2; else if(v === "partly") s += 1; });
+  return s; // out of 12
+}
+function answered(id){ var a = ans(id); return TESTS.every(function(t){ return !!a.tests[t.id]; }) && !!a.verdict; }
+function pips(id){
+  var a = ans(id), wrap = el("span", {class:"pips", "aria-hidden":"true"});
+  TESTS.forEach(function(t){
+    var v = a.tests[t.id];
+    wrap.appendChild(el("span", {class:"pip" + (v === "yes" ? " full" : v === "partly" ? " half" : "")}));
+  });
+  return wrap;
+}
+function chip(vid, labelOverride){
+  if(!vid) return el("span", {class:"chip none", text:"No verdict yet"});
+  var c = el("span", {class:"chip", text: labelOverride || VMAP[vid].label});
+  c.style.setProperty("--vc", "var(--v-" + vid + ")");
+  return c;
+}
+
+/* ---------- team view ---------- */
+var teamView = document.getElementById("view-team");
+
+function renderTeam(){
+  teamView.innerHTML = "";
+  if(!state.started){ teamView.appendChild(renderSetup()); return; }
+  if(state.view === "summary"){ teamView.appendChild(renderSummary()); return; }
+  teamView.appendChild(renderCaseNav());
+  teamView.appendChild(renderCase(CASES[state.current]));
+}
+
+function renderSetup(){
+  var input = el("input", {id:"teamName", type:"text", maxlength:"40", placeholder:"For example, Team Niacinamide", value: state.team || ""});
+  var start = el("button", {class:"btn primary", text:"Start the activity", onclick:function(){
+    var name = input.value.trim();
+    if(!name){ input.focus(); err.hidden = false; return; }
+    state.team = name; state.started = true; state.current = 0; state.view = "case"; persist(); renderTeam();
+  }});
+  var err = el("p", {class:"hint", text:"Add a team name to start.", hidden:true});
+  input.addEventListener("keydown", function(e){ if(e.key === "Enter") start.click(); });
+  return el("div", {class:"setup"}, [
+    el("div", null, [
+      el("h2", {text:"How to do this activity"}),
+      el("p", {class:"hint", text:"Work as a team on one device. You have about 25 minutes, including reporting back."}),
+      stepsList(false),
+      el("h3", {text:"Team roles", style:"margin:18px 0 6px;font-size:1.15rem"}),
+      rolesList()
+    ]),
+    el("div", null, [
+      el("div", {class:"field"}, [ el("label", {for:"teamName", text:"Team name"}), input ]),
+      start, err,
+      el("p", {class:"hint", text:"There is no single right answer for every example. A clear reason matters more than matching the lecturer."}),
+      el("h3", {text:"The six examples", style:"margin:18px 0 6px;font-size:1.15rem"}),
+      el("ul", {class:"roles"}, CASES.map(function(c){ return el("li", null, [ el("strong", {text:c.id + ". " + c.org + ": "}), c.title ]); }))
+    ])
+  ]);
+}
+
+function renderCaseNav(){
+  var nav = el("nav", {class:"casenav", "aria-label":"Examples"});
+  CASES.forEach(function(c, i){
+    nav.appendChild(el("button", {class:"casebtn" + (answered(c.id) ? " done" : ""), "aria-current": i === state.current ? "true" : "false",
+      onclick:function(){ state.current = i; persist(); renderTeam(); }}, [
+      el("span", {class:"tag", text:c.id}), c.short
+    ]));
+  });
+  nav.appendChild(el("button", {class:"casebtn", onclick:function(){ state.view = "summary"; persist(); renderTeam(); }}, [
+    el("span", {class:"tag", text:"✓"}), "Our results"
+  ]));
+  return nav;
+}
+
+function renderCase(c){
+  var a = ans(c.id);
+  var stamp = el("div", {class:"stamp" + (a.verdict ? " on" : ""), "aria-hidden":"true"});
+  if(a.verdict){ stamp.textContent = VMAP[a.verdict].label; stamp.style.color = "var(--v-" + a.verdict + ")"; }
+
+  var exhibit = el("article", {class:"exhibit", "aria-labelledby":"caseTitle"}, [
+    el("div", {class:"letter", text:c.id, "aria-hidden":"true"}),
+    el("div", {class:"org", text:c.org}),
+    el("h2", {id:"caseTitle", text:c.title}),
+    el("p", {class:"what", text:c.what}),
+    el("ul", null, c.facts.map(function(f){ return el("li", {text:f}); })),
+    c.link ? el("p", {class:"hint"}, ["Source: ", el("a", {href:c.link, target:"_blank", rel:"noopener", text:c.linkText})]) : el("p", {class:"hint", text:"Fictional example created for this class."}),
+    stamp
+  ]);
+
+  var scoreText = el("span");
+  var pipWrap = el("span");
+  function updateScore(){
+    pipWrap.innerHTML = ""; pipWrap.appendChild(pips(c.id));
+    var done = TESTS.filter(function(t){ return a.tests[t.id]; }).length;
+    scoreText.textContent = done < TESTS.length ? (done + " of 6 tests answered") : ("Score " + score(c.id) + " out of 12");
+  }
+
+  var testsBox = el("div");
+  TESTS.forEach(function(t){
+    var seg = el("div", {class:"seg", role:"group", "aria-label":t.label});
+    [["yes","Yes"],["partly","Partly"],["no","No"]].forEach(function(o){
+      var b = el("button", {"data-v":o[0], "aria-pressed": a.tests[t.id] === o[0] ? "true" : "false", text:o[1], onclick:function(){
+        a.tests[t.id] = o[0]; persist();
+        Array.prototype.forEach.call(seg.children, function(x){ x.setAttribute("aria-pressed", x === b ? "true" : "false"); });
+        updateScore(); refreshNav();
+      }});
+      seg.appendChild(b);
+    });
+    var info = el("details", {class:"testinfo"}, [
+      el("summary", {text:"Examples and how to score"}),
+      el("p", null, [ el("b", {text:"Strong: "}), t.strong ]),
+      el("p", null, [ el("b", {text:"Weak: "}), t.weak ]),
+      el("p", null, [ el("b", {text:"How to score: "}), t.tip ])
+    ]);
+    testsBox.appendChild(el("div", {class:"test"}, [ el("div", null, [ el("b", {text:t.label}), el("span", {text:t.q}), info ]), seg ]));
+  });
+
+  var vbox = el("div", {class:"verdicts", role:"group", "aria-label":"Verdict"});
+  VERDICTS.forEach(function(v){
+    var b = el("button", {class:"vbtn", "aria-pressed": a.verdict === v.id ? "true" : "false", onclick:function(){
+      a.verdict = v.id; persist();
+      Array.prototype.forEach.call(vbox.children, function(x){ x.setAttribute("aria-pressed", x === b ? "true" : "false"); });
+      stamp.textContent = v.label; stamp.style.color = "var(--v-" + v.id + ")";
+      stamp.classList.remove("on"); void stamp.offsetWidth; stamp.classList.add("on");
+      refreshNav();
+    }}, [ v.label, el("small", {text:v.note}) ]);
+    b.style.setProperty("--vc", "var(--v-" + v.id + ")");
+    vbox.appendChild(b);
+  });
+
+  var reason = el("textarea", {id:"reason", placeholder:"This is, or is not, thought leadership because…"});
+  reason.value = a.reason || "";
+  reason.addEventListener("input", function(){ a.reason = reason.value; persist(); });
+
+  var prev = el("button", {class:"btn", text:"Previous example", disabled: state.current === 0, onclick:function(){ state.current--; persist(); renderTeam(); }});
+  var nextLabel = state.current === CASES.length - 1 ? "See our results" : "Next example";
+  var next = el("button", {class:"btn primary", text:nextLabel, onclick:function(){
+    if(state.current === CASES.length - 1){ state.view = "summary"; } else { state.current++; }
+    persist(); renderTeam(); window.scrollTo({top:0, behavior:"smooth"});
+  }});
+
+  var panel = el("section", {class:"panel", "aria-label":"Test and verdict"}, [
+    el("details", {class:"stepsbox"}, [ el("summary", {text:"Steps for each example"}), stepsList(true) ]),
+    el("h3", {text:"Test it"}),
+    el("p", {class:"sub", text:"Strong examples pass most tests. “Partly” is a fair answer when the evidence is mixed."}),
+    testsBox,
+    el("div", {class:"scoreline"}, [pipWrap, scoreText]),
+    el("h3", {text:"Your verdict", style:"margin-top:18px"}),
+    vbox,
+    el("div", {class:"field"}, [ el("label", {for:"reason", text:"Your reason, in one sentence"}), reason ]),
+    el("div", {class:"gov"}, [ el("b", {text:"Strategic process: "}), "Is this part of an ongoing strategy that the organisation builds over time, or a one-off? Thought leadership is a strategic process, not a single post (slide 28)." ]),
+    el("div", {class:"gov"}, [ el("b", {text:"Governance question: "}), "Who benefits from this, and is the organisation open about its interests and the limits of its evidence? This is not pass or fail, but openness usually makes thought leadership more credible." ]),
+    el("div", {class:"navrow"}, [prev, next])
+  ]);
+  updateScore();
+  return el("div", {class:"grid"}, [exhibit, panel]);
+}
+
+function refreshNav(){
+  var nav = teamView.querySelector(".casenav");
+  if(!nav) return;
+  CASES.forEach(function(c, i){ nav.children[i].classList.toggle("done", answered(c.id)); });
+}
+
+function renderSummary(){
+  var done = CASES.filter(function(c){ return answered(c.id); }).length;
+  var rows = el("div", {class:"rows"});
+  CASES.forEach(function(c, i){
+    var a = ans(c.id);
+    var row = el("div", {class:"row"}, [
+      el("div", {class:"tag", text:c.id}),
+      el("div", null, [ el("h3", {text:c.org + ": " + c.title}), el("p", {class:"reason", text: a.reason ? a.reason : "No reason written yet."}) ]),
+      el("div", {class:"pipcol"}, [pips(c.id)]),
+      el("div", {class:"chipcol"}, [chip(a.verdict)])
+    ]);
+    row.addEventListener("dblclick", function(){ state.current = i; state.view = "case"; persist(); renderTeam(); });
+    if(state.revealed && unlocked){
+      var same = a.verdict && a.verdict === c.suggest;
+      row.appendChild(el("div", {class:"suggest"}, [
+        el("b", {text:"Suggested verdict: "}), chip(c.suggest, c.suggestLabel), " ",
+        el("span", {class:"hint", text: !a.verdict ? "" : (same ? " Your team agrees." : " Your team chose differently. Be ready to defend your reason.")}),
+        el("p", {text:c.why, style:"margin:6px 0 0"})
+      ]));
+    }
+    rows.appendChild(row);
+  });
+
+  var reveal = unlocked ? el("button", {class:"btn", text: state.revealed ? "Hide suggested verdicts" : "Compare with suggested verdicts", onclick:function(){
+    state.revealed = !state.revealed; persist(); renderTeam();
+  }}) : null;
+
+  return el("div", null, [
+    el("div", {class:"sumhead"}, [
+      el("div", null, [
+        el("h2", {text:state.team + ": our verdicts"}),
+        el("p", {class:"hint", text: done + " of 6 examples complete. Select an example name above to change an answer."})
+      ]),
+      el("div", {class:"tools"}, [
+        el("button", {class:"btn", text:"Back to examples", onclick:function(){ state.view = "case"; persist(); renderTeam(); }}),
+        reveal,
+        el("button", {class:"btn", text:"Start over", onclick:function(){
+          if(!confirm("Clear all of this team’s answers?")) return;
+          state = {team:"", started:false, current:0, view:"case", revealed:false, answers:{}}; persist(); renderTeam();
+        }})
+      ])
+    ]),
+    renderCaseNav(),
+    rows,
+    el("p", {class:"callout"}, [
+      el("b", {text:"Report back: "}),
+      "Share one verdict your team is confident about, and one where you disagreed among yourselves. Then enter your verdicts on the class board."
+    ])
+  ]);
+}
+
+/* ---------- class board ---------- */
+var boardView = document.getElementById("view-board");
+
+function renderBoard(){
+  boardView.innerHTML = "";
+  var nameInput = el("input", {id:"newTeam", type:"text", maxlength:"30", placeholder:"Team name"});
+  function addTeam(){
+    var n = nameInput.value.trim(); if(!n) { nameInput.focus(); return; }
+    var id = "t" + Date.now().toString(36);
+    board.teams.push({id:id, name:n}); board.picks[id] = {}; persistBoard(); renderBoard();
+    var again = document.getElementById("newTeam"); if(again) again.focus();
+  }
+  nameInput.addEventListener("keydown", function(e){ if(e.key === "Enter") addTeam(); });
+
+  var tools = el("div", {class:"boardtools"}, [
+    el("div", {class:"field"}, [ el("label", {for:"newTeam", text:"Add a team"}), nameInput ]),
+    el("button", {class:"btn primary", text:"Add team", onclick:addTeam}),
+    state.started ? el("button", {class:"btn", text:"Add my team’s verdicts", onclick:function(){
+      var existing = board.teams.filter(function(t){ return t.name === state.team; })[0];
+      var id = existing ? existing.id : "t" + Date.now().toString(36);
+      if(!existing){ board.teams.push({id:id, name:state.team}); }
+      board.picks[id] = {};
+      CASES.forEach(function(c){ if(ans(c.id).verdict) board.picks[id][c.id] = ans(c.id).verdict; });
+      persistBoard(); renderBoard();
+    }}) : null,
+    board.teams.length ? el("button", {class:"btn", text:"Clear board", onclick:function(){
+      if(!confirm("Remove all teams from the class board?")) return;
+      board = {teams:[], picks:{}}; persistBoard(); renderBoard();
+    }}) : null
+  ]);
+
+  boardView.appendChild(el("p", {class:"hint", text:"For the main screen. Add each team, then record their verdict for each example as they report back. Examples where teams split are flagged for discussion."}));
+  boardView.appendChild(tools);
+
+  if(!board.teams.length){
+    boardView.appendChild(el("div", {class:"tablewrap"}, [ el("div", {class:"empty", text:"Add the first team to start the board."}) ]));
+    return;
+  }
+
+  var headRow = el("tr", null, [ el("th", {scope:"col", text:"Example"}) ]);
+  board.teams.forEach(function(t){
+    headRow.appendChild(el("th", {scope:"col"}, [ el("span", {class:"teamhead"}, [ t.name,
+      el("button", {class:"icon", "aria-label":"Remove " + t.name, text:"×", onclick:function(){
+        board.teams = board.teams.filter(function(x){ return x.id !== t.id; }); delete board.picks[t.id]; persistBoard(); renderBoard();
+      }}) ]) ]));
+  });
+  headRow.appendChild(el("th", {scope:"col", text:"Class spread"}));
+
+  var tbody = el("tbody");
+  var splitCounts = [];
+  CASES.forEach(function(c){
+    var tr = el("tr", null, [ el("td", {class:"casecell"}, [ el("b", {text:c.id + ". " + c.short}), el("span", {text:c.org}) ]) ]);
+    var spreadCell = el("td");
+    board.teams.forEach(function(t){
+      var sel = el("select", {"aria-label": t.name + " verdict for " + c.short});
+      sel.appendChild(el("option", {value:"", text:"—"}));
+      VERDICTS.forEach(function(v){ var o = el("option", {value:v.id, text:v.label}); if(board.picks[t.id] && board.picks[t.id][c.id] === v.id) o.selected = true; sel.appendChild(o); });
+      sel.addEventListener("change", function(){
+        board.picks[t.id] = board.picks[t.id] || {};
+        if(sel.value) board.picks[t.id][c.id] = sel.value; else delete board.picks[t.id][c.id];
+        persistBoard(); fillSpread(c, spreadCell); updateCallout();
+      });
+      tr.appendChild(el("td", {class:"cell"}, [sel]));
+    });
+    fillSpread(c, spreadCell);
+    tr.appendChild(spreadCell);
+    tbody.appendChild(tr);
+  });
+
+  boardView.appendChild(el("div", {class:"tablewrap"}, [ el("table", null, [ el("thead", null, [headRow]), tbody ]) ]));
+  var callout = el("p", {class:"callout", id:"boardCallout"});
+  boardView.appendChild(callout);
+  updateCallout();
+}
+
+function counts(c){
+  var m = {};
+  board.teams.forEach(function(t){ var v = board.picks[t.id] && board.picks[t.id][c.id]; if(v) m[v] = (m[v] || 0) + 1; });
+  return m;
+}
+function fillSpread(c, cell){
+  cell.innerHTML = "";
+  var m = counts(c), keys = Object.keys(m);
+  var wrap = el("div", {class:"spread"});
+  if(!keys.length){ wrap.appendChild(el("span", {class:"hint", text:"No verdicts yet"})); }
+  keys.sort(function(x,y){ return m[y] - m[x]; }).forEach(function(k){ wrap.appendChild(chip(k, VMAP[k].label + " × " + m[k])); });
+  if(keys.length > 1) wrap.appendChild(el("span", {class:"split", text:"Split"}));
+  cell.appendChild(wrap);
+}
+function updateCallout(){
+  var callout = document.getElementById("boardCallout"); if(!callout) return;
+  var best = null, bestN = 1;
+  CASES.forEach(function(c){ var n = Object.keys(counts(c)).length; if(n > bestN){ bestN = n; best = c; } });
+  callout.innerHTML = "";
+  if(best){
+    callout.appendChild(el("b", {text:"Discuss first: "}));
+    callout.appendChild(document.createTextNode(best.id + ". " + best.short + " has " + bestN + " different verdicts. Ask one team from each side to read out its reason."));
+  } else {
+    callout.appendChild(el("b", {text:"Discussion prompt: "}));
+    callout.appendChild(document.createTextNode("Where teams agree, ask which of the six tests made the decision easy. Where they split, ask which test they answered differently."));
+  }
+}
+
+/* ---------- guide to the six tests ---------- */
+var guideView = document.getElementById("view-guide");
+function renderGuide(){
+  guideView.innerHTML = "";
+  guideView.appendChild(el("p", {class:"guide-intro"}, [
+    "Most companies publish content, but only some of it is thought leadership. These six tests, from slide 32, help you decide. A strong example passes all six, or most of them. They draw on Barry and Gironda (2019) and Harvey and colleagues (2021)."
+  ]));
+  var grid = el("div", {class:"guide"});
+  grid.appendChild(el("article", {class:"gcard wide"}, [
+    el("h3", {text:"How to do this activity, step by step"}),
+    stepsList(false),
+    el("h3", {text:"Team roles", style:"margin-top:14px"}),
+    rolesList()
+  ]));
+  TESTS.forEach(function(t, i){
+    grid.appendChild(el("article", {class:"gcard"}, [
+      el("h3", {text:(i + 1) + ". " + t.label}),
+      el("p", {class:"ask", text:t.full}),
+      el("p", null, [ el("b", {text:"Strong: "}), t.strong ]),
+      el("p", null, [ el("b", {text:"Weak: "}), t.weak ]),
+      el("p", null, [ el("b", {text:"How to score: "}), t.tip ])
+    ]));
+  });
+  grid.appendChild(el("article", {class:"gcard wide"}, [
+    el("h3", {text:"The governance question: what should be disclosed?"}),
+    el("p", {text:"This is not a pass-or-fail test. It is a question about honesty. Every organisation has interests: a medicine company may fund awareness of a condition its product treats, and an insurer benefits when its road-safety research makes it look responsible. Good thought leadership is open about its interests and about the limits of its evidence, and that openness usually makes it more credible."})
+  ]));
+  grid.appendChild(el("article", {class:"gcard wide"}, [
+    el("h3", {text:"How the tests connect to the theory"}),
+    el("ul", null, [
+      el("li", {text:"Working definition (slide 28): thought leadership develops credible, distinctive and useful ideas to influence how stakeholders understand and act on an important issue, as a strategic process. The six tests cover each word; the strategic process check covers the last part."}),
+      el("li", {text:"Harvey and colleagues (slide 29): credible knowledge is tested by right to speak and substantive contribution; actionable insight by audience and usefulness; stakeholder value by issue significance and influence intention."}),
+      el("li", {text:"Adjacent practices (slide 33): if an example fails the tests, decide which neighbour it is closest to: expert education, content marketing, PR, advocacy, influencer activity or plain promotion. Borderline is a fair answer when it is partly both."}),
+      el("li", {text:"Expertise to influence (slide 30): these tests judge whether something is thought leadership. Whether it actually changed beliefs or behaviour is a separate question about effectiveness, which needs its own evidence."})
+    ])
+  ]));
+  grid.appendChild(el("article", {class:"gcard wide"}, [
+    el("h3", {text:"How to use the tests"}),
+    el("ul", null, [
+      el("li", {text:"A high score (around 10 to 12 out of 12) usually points to thought leadership. A middle score often means borderline or a mix, and a low score points to another label. The score is a guide; your reason decides."}),
+      el("li", {text:"Several No answers usually point to another label: content marketing, PR, advocacy, influencer activity or promotion."}),
+      el("li", {text:"One weakness does not automatically disqualify an example. Many genuine cases have limited evidence of results."}),
+      el("li", {text:"The reason matters more than the score. Two teams can score an example differently and both be right, if they can explain which test made the difference."})
+    ])
+  ]));
+  guideView.appendChild(grid);
+}
+
+/* ---------- answers (passcode) ---------- */
+var answersView = document.getElementById("view-answers");
+function hex(buf){ return Array.prototype.map.call(new Uint8Array(buf), function(b){ return ("0" + b.toString(16)).slice(-2); }).join(""); }
+function renderAnswers(){
+  answersView.innerHTML = "";
+  if(!unlocked){
+    var input = el("input", {id:"passcode", type:"password", autocomplete:"off", placeholder:"Passcode"});
+    var msg = el("p", {class:"err", role:"alert", hidden:true});
+    var go = el("button", {class:"btn primary", text:"Unlock answers", onclick:function(){
+      var code = input.value.trim();
+      if(!code){ input.focus(); return; }
+      if(!(window.crypto && crypto.subtle && window.TextEncoder)){ msg.textContent = "This browser can’t check the passcode. Try a current version of Chrome, Edge or Safari."; msg.hidden = false; return; }
+      crypto.subtle.digest("SHA-256", new TextEncoder().encode(code)).then(function(buf){
+        if(hex(buf) === PASS_HASH){
+          unlocked = true; try{ sessionStorage.setItem("tl-unlocked", "1"); }catch(e){}
+          renderAnswers();
+        } else { msg.textContent = "That passcode isn’t right. Check with your lecturer."; msg.hidden = false; input.select(); }
+      });
+    }});
+    input.addEventListener("keydown", function(e){ if(e.key === "Enter") go.click(); });
+    answersView.appendChild(el("div", {class:"lockbox"}, [
+      el("h2", {text:"Lecturer answers"}),
+      el("p", {class:"hint", text:"Suggested scores and verdicts for each example. Enter the passcode to view them, ideally after the class discussion."}),
+      el("div", {class:"field"}, [ el("label", {for:"passcode", text:"Passcode"}), el("div", {class:"lockrow"}, [input, go]) ]),
+      msg
+    ]));
+    return;
+  }
+  var lock = el("button", {class:"btn", text:"Lock answers", onclick:function(){
+    unlocked = false; state.revealed = false; persist();
+    try{ sessionStorage.removeItem("tl-unlocked"); }catch(e){}
+    renderAnswers();
+  }});
+  answersView.appendChild(el("div", {class:"anshead"}, [
+    el("div", null, [
+      el("h2", {text:"Suggested answers"}),
+      el("p", {class:"hint", text:"Use these to guide discussion, not as the only right answers. A team with a different verdict and a clear reason should get credit."})
+    ]),
+    lock
+  ]));
+  CASES.forEach(function(c){
+    var k = KEYTESTS[c.id];
+    var tbody = el("tbody");
+    TESTS.forEach(function(t){
+      var a = k.tests[t.id];
+      var labelText = a[0] === "yes" ? "Yes" : a[0] === "partly" ? "Partly" : "No";
+      tbody.appendChild(el("tr", null, [
+        el("th", {scope:"row", text:t.label}),
+        el("td", null, [ el("span", {class:"pill " + a[0], text:labelText}) ]),
+        el("td", {text:a[1]})
+      ]));
+    });
+    answersView.appendChild(el("article", {class:"acard"}, [
+      el("header", null, [
+        el("h3", {text:c.id + ". " + c.org + ": " + c.title}),
+        el("div", {class:"spread"}, [ chip(c.suggest, c.suggestLabel), el("span", {class:"hint", text:"Score " + k.score + " out of 12"}) ])
+      ]),
+      el("div", {class:"tablewrap"}, [ el("table", null, [
+        el("thead", null, [ el("tr", null, [ el("th", {scope:"col", text:"Test"}), el("th", {scope:"col", text:"Suggested"}), el("th", {scope:"col", text:"Why"}) ]) ]),
+        tbody
+      ]) ]),
+      el("p", {text:c.why, style:"margin:12px 0 0"}),
+      el("p", {class:"prompt"}, [ el("b", {text:"Strategic process (slide 28): "}), PROCESS[c.id] ]),
+      el("p", {class:"prompt"}, [ el("b", {text:"Discussion question: "}), k.prompt ])
+    ]));
+  });
+  answersView.appendChild(el("p", {class:"callout"}, [
+    el("b", {text:"Tip: "}),
+    "While answers are unlocked on this device, the team results page also offers a comparison with the suggested verdicts. Lock the answers before handing the device to students."
+  ]));
+}
+
+/* ---------- tabs ---------- */
+var TABS = {
+  team: {btn:document.getElementById("tab-team"), view:teamView, render:function(){ renderTeam(); }},
+  guide: {btn:document.getElementById("tab-guide"), view:guideView, render:function(){ renderGuide(); }},
+  board: {btn:document.getElementById("tab-board"), view:boardView, render:function(){ renderBoard(); }},
+  answers: {btn:document.getElementById("tab-answers"), view:answersView, render:function(){ renderAnswers(); }}
+};
+var ORDER = ["team", "guide", "board", "answers"];
+function show(which){
+  if(!TABS[which]) which = "team";
+  ORDER.forEach(function(k){
+    var on = k === which;
+    TABS[k].btn.setAttribute("aria-selected", on ? "true" : "false");
+    TABS[k].view.hidden = !on;
+  });
+  TABS[which].render();
+  if(location.hash !== "#" + which) history.replaceState(null, "", "#" + which);
+}
+ORDER.forEach(function(k, i){
+  TABS[k].btn.addEventListener("click", function(){ show(k); });
+  TABS[k].btn.addEventListener("keydown", function(e){
+    var j = e.key === "ArrowRight" ? i + 1 : e.key === "ArrowLeft" ? i - 1 : null;
+    if(j === null) return;
+    var next = ORDER[(j + ORDER.length) % ORDER.length];
+    TABS[next].btn.focus(); show(next);
+  });
+});
+window.addEventListener("hashchange", function(){ show(location.hash.slice(1)); });
+
+/* ---------- timer ---------- */
+var TOTAL = 25 * 60, left = TOTAL, ticking = null;
+var clock = document.getElementById("clock"), timerBox = document.getElementById("timer"), toggle = document.getElementById("timerToggle");
+function paint(){
+  var m = Math.floor(left / 60), s = left % 60;
+  clock.textContent = m + ":" + (s < 10 ? "0" : "") + s;
+  timerBox.classList.toggle("low", left <= 120);
+}
+toggle.addEventListener("click", function(){
+  if(ticking){ clearInterval(ticking); ticking = null; toggle.textContent = "Start"; return; }
+  if(left <= 0) left = TOTAL;
+  toggle.textContent = "Pause";
+  ticking = setInterval(function(){
+    left--; paint();
+    if(left <= 0){ clearInterval(ticking); ticking = null; toggle.textContent = "Start"; clock.textContent = "Time"; }
+  }, 1000);
+});
+document.getElementById("timerReset").addEventListener("click", function(){
+  if(ticking){ clearInterval(ticking); ticking = null; } left = TOTAL; toggle.textContent = "Start"; paint();
+});
+paint();
+
+show(location.hash.slice(1) || "team");
+})();
+</script>
+</body>
+</html>
